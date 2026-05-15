@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>同窓会 まとめ</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@400;700;900&display=swap');
+
+  :root {
+    --pink: #e8415a;
+    --light-pink: #f7c5cd;
+    --cream: #fdf6ee;
+    --blue: #6ab4c8;
+    --gold: #d4a843;
+    --dark: #2a1a1a;
+    --gray: #666;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--cream);
+    color: var(--dark);
+    padding: 20px;
+    min-height: 100vh;
+  }
+
+  .page {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 30px 20px 20px;
+    background: white;
+    border-radius: 16px;
+    border: 3px solid var(--pink);
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 8px;
+    background: repeating-linear-gradient(90deg, var(--pink) 0 20px, var(--blue) 20px 40px, var(--cream) 40px 60px);
+  }
+  .header-badge {
+    display: inline-block;
+    background: var(--pink);
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 16px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+  .header h1 {
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--pink);
+    line-height: 1.2;
+  }
+  .header-sub {
+    font-size: 14px;
+    color: var(--gray);
+    margin-top: 6px;
+  }
+
+  /* Flow diagram */
+  .flow-section {
+    background: white;
+    border-radius: 16px;
+    border: 2px solid #eee;
+    padding: 24px 20px;
+    margin-bottom: 20px;
+  }
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--pink);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--light-pink);
+  }
+
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .flow-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    position: relative;
+  }
+
+  .flow-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 48px;
+    flex-shrink: 0;
+  }
+
+  .flow-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 900;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .flow-line {
+    width: 3px;
+    height: 36px;
+    background: linear-gradient(var(--light-pink), var(--light-pink));
+    margin: 0 auto;
+  }
+
+  .flow-content {
+    padding: 4px 0 28px;
+    flex: 1;
+  }
+
+  .flow-step {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--gray);
+    margin-bottom: 2px;
+  }
+
+  .flow-title {
+    font-size: 18px;
+    font-weight: 900;
+    line-height: 1.3;
+    margin-bottom: 5px;
+  }
+
+  .flow-desc {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.7;
+  }
+
+  .tag {
+    display: inline-block;
+    background: var(--light-pink);
+    color: var(--pink);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-right: 4px;
+    margin-bottom: 4px;
+  }
+  .tag.blue {
+    background: #d6edf5;
+    color: #3a8aaa;
+  }
+  .tag.gold {
+    background: #fdf0d0;
+    color: #a07820;
+  }
+
+  /* Step colors */
+  .step1 .flow-icon { background: #fde8eb; color: var(--pink); }
+  .step2 .flow-icon { background: #d6edf5; color: #3a8aaa; }
+  .step3 .flow-icon { background: #fdf0d0; color: #a07820; }
+  .step4 .flow-icon { background: #e8f5e9; color: #2e7d52; }
+  .step1 .flow-title { color: var(--pink); }
+  .step2 .flow-title { color: #3a8aaa; }
+  .step3 .flow-title { color: #a07820; }
+  .step4 .flow-title { color: #2e7d52; }
+
+  /* Info cards */
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .card {
+    background: white;
+    border-radius: 14px;
+    padding: 18px 16px;
+    border: 2px solid #eee;
+  }
+
+  .card-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gray);
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  .card-value {
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--pink);
+    line-height: 1.2;
+  }
+  .card-sub {
+    font-size: 12px;
+    color: var(--gray);
+    margin-top: 3px;
+  }
+
+  /* Org chart */
+  .org-section {
+    background: white;
+    border-radius: 16px;
+    border: 2px solid #eee;
+    padding: 24px 20px;
+    margin-bottom: 20px;
+  }
+
+  .org-tree {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .org-box {
+    background: var(--pink);
+    color: white;
+    border-radius: 12px;
+    padding: 10px 28px;
+    font-weight: 700;
+    font-size: 14px;
+    text-align: center;
+    min-width: 160px;
+  }
+
+  .org-box.blue {
+    background: var(--blue);
+  }
+
+  .org-box.gold {
+    background: var(--gold);
+  }
+
+  .org-box.green {
+    background: #4caf7d;
+  }
+
+  .org-connector {
+    width: 2px;
+    height: 24px;
+    background: #ddd;
+  }
+
+  .org-branch {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    position: relative;
+  }
+
+  .org-branch::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 80px);
+    height: 2px;
+    background: #ddd;
+  }
+
+  .org-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .org-col .org-connector {
+    height: 20px;
+  }
+
+  .org-note {
+    font-size: 11px;
+    color: var(--gray);
+    margin-top: 4px;
+    text-align: center;
+  }
+
+  /* Highlight box */
+  .highlight {
+    background: linear-gradient(135deg, #fde8eb 0%, #fdf6ee 100%);
+    border: 2px solid var(--light-pink);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+  }
+
+  .highlight-icon {
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+
+  .highlight-title {
+    font-size: 15px;
+    font-weight: 900;
+    color: var(--pink);
+    margin-bottom: 6px;
+  }
+
+  .highlight-text {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.8;
+  }
+
+  .quote {
+    border-left: 4px solid var(--pink);
+    padding-left: 14px;
+    margin-top: 10px;
+    font-style: italic;
+    font-size: 13px;
+    color: #444;
+    line-height: 1.8;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--gray);
+    padding: 10px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-badge">昭和54年・55年生まれ</div>
+    <h1>大同窓会 & 同窓会<br>企画まとめ</h1>
+    <div class="header-sub">飯田下伊那 ／ 緑ヶ丘中学校</div>
+  </div>
+
+  <!-- Info Cards -->
+  <div class="cards">
+    <div class="card">
+      <div class="card-label">📅 開催日</div>
+      <div class="card-value">9月20日<br><span style="font-size:14px">（日曜）</span></div>
+      <div class="card-sub">16:00〜</div>
+    </div>
+    <div class="card">
+      <div class="card-label">📍 会場</div>
+      <div class="card-value" style="font-size:16px">シルクホテル</div>
+      <div class="card-sub">会費：1万〜1.2万円予定</div>
+    </div>
+    <div class="card">
+      <div class="card-label">🎓 対象</div>
+      <div class="card-value" style="font-size:15px">昭和54年<br>55年生まれ</div>
+      <div class="card-sub">下伊那全域</div>
+    </div>
+    <div class="card">
+      <div class="card-label">🏫 2次会</div>
+      <div class="card-value" style="font-size:15px">緑ヶ丘中<br>同窓会</div>
+      <div class="card-sub">中学校全体で開催</div>
+    </div>
+  </div>
+
+  <!-- Flow -->
+  <div class="flow-section">
+    <div class="section-title">📋 イベントの流れ</div>
+    <div class="flow">
+
+      <div class="flow-item step1">
+        <div class="flow-left">
+          <div class="flow-icon">①</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-step">STEP 1 ／ まず最初に</div>
+          <div class="flow-title">3組の同級会を開催</div>
+          <div class="flow-desc">
+            いきなり大規模イベントへの参加を呼びかけても人が集まりにくいため、<br>
+            まずは身近な<strong>3組の同級会</strong>から始めてみる。<br>
+            <span class="tag">きっかけづくり</span>
+            <span class="tag">小さく始める</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-item step2">
+        <div class="flow-left">
+          <div class="flow-icon">②</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-step">STEP 2 ／ 9月20日 当日</div>
+          <div class="flow-title">大同窓会（1次会）</div>
+          <div class="flow-desc">
+            飯田下伊那の昭和54年・55年生まれが一堂に会する大規模な同窓会。<br>
+            シルクホテルにて16時スタート。<br>
+            <span class="tag blue">下伊那全域</span>
+            <span class="tag blue">1万〜1.2万円</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-item step3">
+        <div class="flow-left">
+          <div class="flow-icon">③</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-step">STEP 3 ／ 2次会</div>
+          <div class="flow-title">緑ヶ丘中学校 同窓会</div>
+          <div class="flow-desc">
+            大同窓会のあと、緑ヶ丘中学校の同窓会を2次会として開催。<br>
+            <strong>中学校全体</strong>でまとめて行う。<br>
+            <span class="tag gold">学校全体</span>
+            <span class="tag gold">2次会</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-item step4">
+        <div class="flow-left">
+          <div class="flow-icon">✓</div>
+        </div>
+        <div class="flow-content">
+          <div class="flow-step">RESULT ／ 目指すゴール</div>
+          <div class="flow-title">みんなで集まる！</div>
+          <div class="flow-desc">
+            3組の同級会 → 大同窓会 → 緑ヶ丘同窓会 と段階的に輪を広げていく。<br>
+            <span class="tag" style="background:#e8f5e9;color:#2e7d52;">参加者拡大</span>
+            <span class="tag" style="background:#e8f5e9;color:#2e7d52;">旧交を温める</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Org Chart -->
+  <div class="org-section">
+    <div class="section-title">👥 担当・役割分担</div>
+
+    <!-- Top box -->
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      <div class="org-box">昭和54年・55年生まれ 大同窓会<br><span style="font-weight:400;font-size:12px">プロジェクトチーム</span></div>
+      <div class="org-connector"></div>
+
+      <!-- Horizontal branch line -->
+      <div style="position:relative;width:100%;display:flex;justify-content:center;">
+        <div style="position:absolute;top:0;left:10%;right:10%;height:2px;background:#ddd;"></div>
+      </div>
+
+      <!-- 4 school columns -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%;margin-top:0;">
+
+        <!-- 緑ヶ丘中学校 -->
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="width:2px;height:20px;background:#ddd;"></div>
+          <div class="org-box blue" style="font-size:12px;padding:8px 4px;width:100%;text-align:center;min-width:unset;">緑ヶ丘<br>中学校</div>
+          <!-- classes -->
+          <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px;width:100%;">
+            <div style="width:2px;height:10px;background:#ddd;margin:0 auto;"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+              <div style="background:#f5f5f5;border:1.5px solid #ddd;border-radius:8px;padding:6px 3px;text-align:center;">
+                <div style="font-size:12px;font-weight:900;color:#888;">1組</div>
+              </div>
+              <div style="background:#f5f5f5;border:1.5px solid #ddd;border-radius:8px;padding:6px 3px;text-align:center;">
+                <div style="font-size:12px;font-weight:900;color:#888;">2組</div>
+              </div>
+              <!-- 3組 highlighted -->
+              <div style="background:linear-gradient(135deg,#fde8eb,#fdf0f2);border:2px solid var(--pink);border-radius:8px;padding:6px 3px;text-align:center;position:relative;grid-column:span 2;">
+                <div style="font-size:12px;font-weight:900;color:var(--pink);">3組</div>
+                <div style="font-size:10px;font-weight:700;color:var(--pink);margin-top:2px;">山本 ／ 池田</div>
+              </div>
+              <div style="background:#f5f5f5;border:1.5px solid #ddd;border-radius:8px;padding:6px 3px;text-align:center;">
+                <div style="font-size:12px;font-weight:900;color:#888;">4組</div>
+              </div>
+              <div style="background:#f5f5f5;border:1.5px solid #ddd;border-radius:8px;padding:6px 3px;text-align:center;">
+                <div style="font-size:12px;font-weight:900;color:#888;">5組</div>
+              </div>
+              <div style="background:#f5f5f5;border:1.5px solid #ddd;border-radius:8px;padding:6px 3px;text-align:center;">
+                <div style="font-size:12px;font-weight:900;color:#888;">6組</div>
+              </div>
+              <div style="background:#f5f5f5;border:1.5px solid #ddd;border-radius:8px;padding:6px 3px;text-align:center;">
+                <div style="font-size:12px;font-weight:900;color:#888;">7組</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 鼎中学校 -->
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="width:2px;height:20px;background:#ddd;"></div>
+          <div class="org-box" style="background:#4caf7d;font-size:12px;padding:8px 4px;width:100%;text-align:center;min-width:unset;">鼎<br>中学校</div>
+          <div style="width:2px;height:10px;background:#ddd;margin-top:8px;"></div>
+          <div style="background:#f5f5f5;border:1.5px solid #ddd;border-radius:8px;padding:10px 4px;text-align:center;width:100%;margin-top:0;">
+            <div style="font-size:11px;color:#aaa;">代表者</div>
+          </div>
+        </div>
+
+        <!-- 高陵中学校 -->
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="width:2px;height:20px;background:#ddd;"></div>
+          <div class="org-box" style="background:#9c6fbd;font-size:12px;padding:8px 4px;width:100%;text-align:center;min-width:unset;">高陵<br>中学校</div>
+          <div style="width:2px;height:10px;background:#ddd;margin-top:8px;"></div>
+          <div style="background:#f5f5f5;border:1.5px solid #ddd;border-radius:8px;padding:10px 4px;text-align:center;width:100%;margin-top:0;">
+            <div style="font-size:11px;color:#aaa;">代表者</div>
+          </div>
+        </div>
+
+        <!-- その他中学校 -->
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="width:2px;height:20px;background:#ddd;"></div>
+          <div class="org-box" style="background:#d4a843;font-size:12px;padding:8px 4px;width:100%;text-align:center;min-width:unset;">その他<br>中学校</div>
+          <div style="width:2px;height:10px;background:#ddd;margin-top:8px;"></div>
+          <div style="background:#f5f5f5;border:1.5px solid #ddd;border-radius:8px;padding:10px 4px;text-align:center;width:100%;margin-top:0;">
+            <div style="font-size:11px;color:#aaa;">代表者</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Highlight / Summary -->
+  <div class="highlight">
+    <div class="highlight-icon">💡</div>
+    <div class="highlight-title">なぜ同級会から始めるのか？</div>
+    <div class="highlight-text">
+      大きなイベントにいきなり誘っても参加のハードルが高い。<br>
+      まずは小さな「3組の同級会」で再会の楽しさを体験してもらい、<br>
+      その流れで大同窓会・緑ヶ丘同窓会への参加につなげる<strong>段階的アプローチ</strong>。
+    </div>
+    <div class="quote">
+      「いきなり大同窓会や同窓会への参加を募っても、なかなか集まらないだろうから、まず先に3組の同級会をやってみては」
+    </div>
+  </div>
+
+  <div class="footer">昭和54年・55年生まれ 大同窓会 プロジェクトチーム ／ 連絡先：070-2831-6357</div>
+</div>
+</body>
+</html>
