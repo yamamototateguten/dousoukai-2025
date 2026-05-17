@@ -12,19 +12,32 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
+    width: 100vw;
+    height: 100vh;
+    height: 100svh;
     font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
     overflow: hidden;
   }
 
   #stage {
     position: relative;
-    width: 480px;
-    height: 854px;
+    /* スマホ: 全画面。デスクトップ: 480×854で中央表示 */
+    width: 100vw;
+    height: 100vh;
+    height: 100svh;
     background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-    border-radius: 20px;
+    border-radius: 0;
     overflow: hidden;
-    box-shadow: 0 0 60px rgba(100, 180, 255, 0.3);
+    touch-action: manipulation;
+  }
+
+  @media (min-width: 500px) and (min-height: 860px) {
+    #stage {
+      width: 480px;
+      height: 854px;
+      border-radius: 20px;
+      box-shadow: 0 0 60px rgba(100, 180, 255, 0.3);
+    }
   }
 
   /* Film grain overlay */
@@ -68,17 +81,17 @@
     white-space: nowrap;
   }
 
-  /* Sticker display */
+  /* Sticker display — square, scales with viewport */
   .sticker-wrap {
     position: relative;
-    width: 260px;
-    height: 260px;
-    margin: 20px auto;
+    width: min(260px, 54vmin);
+    height: min(260px, 54vmin);
+    margin: clamp(10px, 2.5vh, 20px) auto;
   }
 
   .sticker-canvas {
-    width: 260px;
-    height: 260px;
+    width: min(260px, 54vmin);
+    height: min(260px, 54vmin);
     border-radius: 16px;
     overflow: hidden;
     position: relative;
@@ -143,29 +156,30 @@
   .narrative {
     text-align: center;
     color: white;
-    margin-top: 40px;
+    margin-top: clamp(16px, 4vh, 40px);
     max-width: 340px;
+    padding: 0 8px;
   }
 
   .scene-num {
-    font-size: 10px;
+    font-size: clamp(9px, 2vw, 10px);
     letter-spacing: 3px;
     color: rgba(255,255,255,0.3);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     text-transform: uppercase;
   }
 
   .narrative-title {
-    font-size: 22px;
+    font-size: clamp(17px, 4.5vw, 22px);
     font-weight: 900;
     line-height: 1.4;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     text-shadow: 0 2px 20px rgba(100,180,255,0.5);
   }
 
   .narrative-body {
-    font-size: 13px;
-    line-height: 2;
+    font-size: clamp(11px, 2.8vw, 13px);
+    line-height: 1.9;
     color: rgba(255,255,255,0.7);
     opacity: 0;
     transform: translateY(8px);
@@ -234,7 +248,7 @@
   }
 
   #title-screen h1 {
-    font-size: 32px;
+    font-size: clamp(24px, 7vw, 32px);
     font-weight: 900;
     color: white;
     text-align: center;
@@ -244,7 +258,7 @@
   }
 
   #title-screen .subtitle {
-    font-size: 13px;
+    font-size: clamp(11px, 3vw, 13px);
     color: rgba(255,255,255,0.5);
     letter-spacing: 2px;
   }
@@ -256,34 +270,37 @@
 
   #title-screen h1 { animation: titleGlow 2s ease-in-out infinite; }
 
-  /* Play button */
+  /* Play button — min 44px height for touch targets */
   #play-btn {
-    margin-top: 40px;
+    margin-top: clamp(24px, 5vh, 40px);
     background: rgba(255,255,255,0.1);
     border: 2px solid rgba(255,255,255,0.3);
     color: white;
-    font-size: 14px;
+    font-size: clamp(13px, 3.5vw, 14px);
     font-weight: 700;
-    padding: 12px 36px;
+    padding: 14px 40px;
+    min-height: 52px;
     border-radius: 30px;
     cursor: pointer;
     letter-spacing: 2px;
     transition: all 0.3s ease;
     font-family: inherit;
     backdrop-filter: blur(8px);
+    -webkit-tap-highlight-color: transparent;
   }
 
-  #play-btn:hover {
-    background: rgba(100,180,255,0.2);
-    border-color: rgba(100,180,255,0.6);
-    transform: scale(1.05);
+  #play-btn:active {
+    background: rgba(100,180,255,0.3);
+    transform: scale(0.97);
   }
 
   #file-hint {
     margin-top: 16px;
-    font-size: 11px;
+    font-size: clamp(10px, 2.5vw, 11px);
     color: rgba(255,255,255,0.3);
     letter-spacing: 1px;
+    text-align: center;
+    padding: 0 20px;
   }
 
   #img-upload {
@@ -292,20 +309,27 @@
 
   #upload-label {
     display: inline-block;
-    margin-top: 10px;
-    font-size: 12px;
+    margin-top: 12px;
+    font-size: clamp(12px, 3vw, 13px);
     color: rgba(255,255,255,0.4);
     border: 1px dashed rgba(255,255,255,0.2);
-    padding: 8px 20px;
-    border-radius: 20px;
+    padding: 12px 24px;
+    min-height: 48px;
+    border-radius: 24px;
     cursor: pointer;
     transition: all 0.3s;
     letter-spacing: 1px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  #upload-label:hover {
+  #upload-label:active {
     color: rgba(255,255,255,0.7);
     border-color: rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.05);
   }
 
   /* End screen */
@@ -329,7 +353,7 @@
   }
 
   #end-screen h2 {
-    font-size: 26px;
+    font-size: clamp(20px, 5.5vw, 26px);
     font-weight: 900;
     color: white;
     text-align: center;
@@ -338,7 +362,7 @@
   }
 
   #end-screen p {
-    font-size: 13px;
+    font-size: clamp(11px, 3vw, 13px);
     color: rgba(255,255,255,0.5);
     text-align: center;
     line-height: 2;
@@ -349,19 +373,21 @@
     background: rgba(100,180,255,0.15);
     border: 2px solid rgba(100,180,255,0.4);
     color: rgba(100,180,255,0.9);
-    font-size: 13px;
+    font-size: clamp(12px, 3vw, 13px);
     font-weight: 700;
-    padding: 10px 30px;
-    border-radius: 25px;
+    padding: 14px 32px;
+    min-height: 52px;
+    border-radius: 26px;
     cursor: pointer;
     letter-spacing: 1px;
     transition: all 0.3s;
     font-family: inherit;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  #replay-btn:hover {
+  #replay-btn:active {
     background: rgba(100,180,255,0.3);
-    transform: scale(1.05);
+    transform: scale(0.97);
   }
 
   /* Sparkles */
@@ -379,9 +405,10 @@
     z-index: 80;
   }
 
-  /* Responsive */
-  @media (max-height: 860px) {
-    #stage { height: 100vh; border-radius: 0; }
+  /* Season badge — slightly smaller on narrow screens */
+  @media (max-width: 360px) {
+    .season { font-size: 9px; }
+    .scene { padding: 20px; }
   }
 </style>
 </head>
@@ -715,10 +742,17 @@
     clearTimeout(timer);
     timer = setTimeout(() => showScene(index + 1), SCENE_DURATION);
 
-    // Click to advance
+    // Tap / click to advance (touchend for instant response on mobile)
     const stage = document.getElementById('stage');
+    stage.ontouchend = (e) => {
+      if (!e.target.closest('button') && !e.target.closest('label')) {
+        e.preventDefault();
+        clearTimeout(timer);
+        showScene(currentScene + 1);
+      }
+    };
     stage.onclick = (e) => {
-      if (!e.target.closest('button')) {
+      if (!e.target.closest('button') && !e.target.closest('label')) {
         clearTimeout(timer);
         showScene(currentScene + 1);
       }
