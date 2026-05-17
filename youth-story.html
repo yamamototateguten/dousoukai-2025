@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>あの夏の青春物語</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0a14;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    overflow: hidden;
+  }
+
+  #stage {
+    position: relative;
+    width: 480px;
+    height: 854px;
+    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(100, 180, 255, 0.3);
+  }
+
+  /* Film grain overlay */
+  #stage::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.3;
+  }
+
+  /* Scenes */
+  .scene {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    padding: 30px;
+  }
+  .scene.active {
+    opacity: 1;
+  }
+
+  /* Season badge */
+  .season {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* Sticker display */
+  .sticker-wrap {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    margin: 20px auto;
+  }
+
+  .sticker-canvas {
+    width: 260px;
+    height: 260px;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .sticker-img {
+    position: absolute;
+    width: 400%;
+    height: 400%;
+    image-rendering: crisp-edges;
+  }
+
+  /* Sticker bounce animation */
+  @keyframes stickerIn {
+    0% { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+    60% { transform: scale(1.12) rotate(3deg); opacity: 1; }
+    80% { transform: scale(0.96) rotate(-1deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .sticker-wrap.animate .sticker-canvas {
+    animation: stickerIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+               float 3s ease-in-out 0.8s infinite;
+  }
+
+  /* Subtitle label */
+  .sticker-label {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,0.95);
+    color: #222;
+    font-size: 15px;
+    font-weight: 900;
+    padding: 4px 16px;
+    border-radius: 20px;
+    white-space: nowrap;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    opacity: 0;
+    animation: none;
+  }
+
+  @keyframes labelIn {
+    0% { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  }
+
+  .sticker-wrap.animate .sticker-label {
+    animation: labelIn 0.4s ease 0.5s forwards;
+  }
+
+  /* Narrative text */
+  .narrative {
+    text-align: center;
+    color: white;
+    margin-top: 40px;
+    max-width: 340px;
+  }
+
+  .scene-num {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .narrative-title {
+    font-size: 22px;
+    font-weight: 900;
+    line-height: 1.4;
+    margin-bottom: 12px;
+    text-shadow: 0 2px 20px rgba(100,180,255,0.5);
+  }
+
+  .narrative-body {
+    font-size: 13px;
+    line-height: 2;
+    color: rgba(255,255,255,0.7);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.6s ease 0.8s, transform 0.6s ease 0.8s;
+  }
+
+  .scene.active .narrative-body {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Scene-specific gradients */
+  .scene-spring { background: linear-gradient(180deg, #1a2744 0%, #1e3a5f 100%); }
+  .scene-summer { background: linear-gradient(180deg, #1e2d0a 0%, #2d4a12 100%); }
+  .scene-struggle { background: linear-gradient(180deg, #1a0a0a 0%, #2d1010 100%); }
+  .scene-cheer { background: linear-gradient(180deg, #0a1a2d 0%, #1a3050 100%); }
+  .scene-game { background: linear-gradient(180deg, #1a0a2d 0%, #2d1050 100%); }
+  .scene-victory { background: linear-gradient(180deg, #1a1200 0%, #3d2e00 100%); }
+  .scene-after { background: linear-gradient(180deg, #0a1a10 0%, #102d1a 100%); }
+  .scene-goodbye { background: linear-gradient(180deg, #0a0a1a 0%, #1a1a30 100%); }
+
+  /* Stars background */
+  .stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--dur) ease-in-out infinite;
+    opacity: var(--op);
+  }
+
+  @keyframes twinkle {
+    0%, 100% { opacity: var(--op); }
+    50% { opacity: 0.1; }
+  }
+
+  /* Progress bar */
+  #progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #64b4ff, #ff6496);
+    transition: width 0.3s ease;
+    z-index: 50;
+  }
+
+  /* Title screen */
+  #title-screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, #0a0a1a 0%, #1a1a30 100%);
+    z-index: 20;
+    transition: opacity 1.5s ease;
+  }
+
+  #title-screen h1 {
+    font-size: 32px;
+    font-weight: 900;
+    color: white;
+    text-align: center;
+    line-height: 1.4;
+    text-shadow: 0 0 40px rgba(100,180,255,0.8);
+    margin-bottom: 12px;
+  }
+
+  #title-screen .subtitle {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 2px;
+  }
+
+  @keyframes titleGlow {
+    0%, 100% { text-shadow: 0 0 40px rgba(100,180,255,0.6); }
+    50% { text-shadow: 0 0 60px rgba(100,180,255,1), 0 0 100px rgba(150,210,255,0.4); }
+  }
+
+  #title-screen h1 { animation: titleGlow 2s ease-in-out infinite; }
+
+  /* Play button */
+  #play-btn {
+    margin-top: 40px;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 36px;
+    border-radius: 30px;
+    cursor: pointer;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    backdrop-filter: blur(8px);
+  }
+
+  #play-btn:hover {
+    background: rgba(100,180,255,0.2);
+    border-color: rgba(100,180,255,0.6);
+    transform: scale(1.05);
+  }
+
+  #file-hint {
+    margin-top: 16px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 1px;
+  }
+
+  #img-upload {
+    display: none;
+  }
+
+  #upload-label {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    border: 1px dashed rgba(255,255,255,0.2);
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+    letter-spacing: 1px;
+  }
+
+  #upload-label:hover {
+    color: rgba(255,255,255,0.7);
+    border-color: rgba(255,255,255,0.4);
+  }
+
+  /* End screen */
+  #end-screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, #0a0a1a 0%, #1a1a30 100%);
+    z-index: 20;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.5s ease;
+  }
+
+  #end-screen.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  #end-screen h2 {
+    font-size: 26px;
+    font-weight: 900;
+    color: white;
+    text-align: center;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+
+  #end-screen p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    text-align: center;
+    line-height: 2;
+  }
+
+  #replay-btn {
+    margin-top: 32px;
+    background: rgba(100,180,255,0.15);
+    border: 2px solid rgba(100,180,255,0.4);
+    color: rgba(100,180,255,0.9);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px 30px;
+    border-radius: 25px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+    font-family: inherit;
+  }
+
+  #replay-btn:hover {
+    background: rgba(100,180,255,0.3);
+    transform: scale(1.05);
+  }
+
+  /* Sparkles */
+  @keyframes sparkle {
+    0% { opacity: 0; transform: scale(0) rotate(0deg); }
+    50% { opacity: 1; transform: scale(1.2) rotate(180deg); }
+    100% { opacity: 0; transform: scale(0) rotate(360deg); }
+  }
+
+  .sparkle {
+    position: absolute;
+    font-size: 20px;
+    animation: sparkle 1.2s ease forwards;
+    pointer-events: none;
+    z-index: 80;
+  }
+
+  /* Responsive */
+  @media (max-height: 860px) {
+    #stage { height: 100vh; border-radius: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <!-- Stars -->
+  <div class="stars" id="stars"></div>
+
+  <!-- Title Screen -->
+  <div id="title-screen">
+    <h1>あの夏の<br>青春物語</h1>
+    <div class="subtitle">1994年 ／ 緑ヶ丘中学校</div>
+    <button id="play-btn" onclick="startStory()">▶ 再生する</button>
+    <div id="file-hint">※ スティッカー画像を選択してください</div>
+    <input type="file" id="img-upload" accept="image/*" onchange="loadImage(event)">
+    <label for="img-upload" id="upload-label">📎 画像を選択する</label>
+  </div>
+
+  <!-- Scenes -->
+  <div class="scene scene-spring" id="scene-0">
+    <div class="season">Spring · 4月</div>
+    <div class="sticker-wrap" id="sw-0">
+      <div class="sticker-canvas">
+        <img class="sticker-img" id="img-0" src="stickers.png" alt="sticker" style="left:0%;top:0%">
+      </div>
+      <div class="sticker-label">よろしく！</div>
+    </div>
+    <div class="narrative">
+      <div class="scene-num">Scene 01</div>
+      <div class="narrative-title">新学期が始まった。</div>
+      <div class="narrative-body">中学3年生。<br>最後の年が、今日からはじまる。<br>「よろしく！俺、山本っていいます」</div>
+    </div>
+  </div>
+
+  <div class="scene scene-summer" id="scene-1">
+    <div class="season">Spring · 4月</div>
+    <div class="sticker-wrap" id="sw-1">
+      <div class="sticker-canvas">
+        <img class="sticker-img" id="img-1" src="stickers.png" alt="sticker" style="left:-100%;top:0%">
+      </div>
+      <div class="sticker-label">了解です！</div>
+    </div>
+    <div class="narrative">
+      <div class="scene-num">Scene 02</div>
+      <div class="narrative-title">部活のキャプテンに<br>指名された。</div>
+      <div class="narrative-body">「お前がやれ」と顧問に言われた。<br>断る理由もない。<br>「了解です！」</div>
+    </div>
+  </div>
+
+  <div class="scene scene-summer" id="scene-2">
+    <div class="season">Summer · 7月</div>
+    <div class="sticker-wrap" id="sw-2">
+      <div class="sticker-canvas">
+        <img class="sticker-img" id="img-2" src="stickers.png" alt="sticker" style="left:0%;top:-200%">
+      </div>
+      <div class="sticker-label">まかせて！</div>
+    </div>
+    <div class="narrative">
+      <div class="scene-num">Scene 03</div>
+      <div class="narrative-title">夏の大会まで、<br>あと2ヶ月。</div>
+      <div class="narrative-body">チームを引っ張っていくと誓った。<br>「まかせて！絶対に地区優勝するぞ」</div>
+    </div>
+  </div>
+
+  <div class="scene scene-struggle" id="scene-3">
+    <div class="season">Summer · 7月</div>
+    <div class="sticker-wrap" id="sw-3">
+      <div class="sticker-canvas">
+        <img class="sticker-img" id="img-3" src="stickers.png" alt="sticker" style="left:-100%;top:-100%">
+      </div>
+      <div class="sticker-label">しょぼーん</div>
+    </div>
+    <div class="narrative">
+      <div class="scene-num">Scene 04</div>
+      <div class="narrative-title">でも、現実は<br>甘くなかった。</div>
+      <div class="narrative-body">練習試合、ボロ負け。<br>自分のプレーも最悪だった。<br>何もかもうまくいかない。</div>
+    </div>
+  </div>
+
+  <div class="scene scene-struggle" id="scene-4">
+    <div class="season">Summer · 8月</div>
+    <div class="sticker-wrap" id="sw-4">
+      <div class="sticker-canvas">
+        <img class="sticker-img" id="img-4" src="stickers.png" alt="sticker" style="left:0%;top:-300%">
+      </div>
+      <div class="sticker-label">ごめんなさい...</div>
+    </div>
+    <div class="narrative">
+      <div class="scene-num">Scene 05</div>
+      <div class="narrative-title">チームに迷惑を<br>かけてしまった。</div>
+      <div class="narrative-body">「キャプテンとして情けない。<br>本当にごめんなさい...」<br>声が震えた。</div>
+    </div>
+  </div>
+
+  <div class="scene scene-cheer" id="scene-5">
+    <div class="season">Summer · 8月</div>
+    <div class="sticker-wrap" id="sw-5">
+      <div class="sticker-canvas">
+        <img class="sticker-img" id="img-5" src="stickers.png" alt="sticker" style="left:-300%;top:-100%">
+      </div>
+      <div class="sticker-label">がんばるぞ！</div>
+    </div>
+    <div class="narrative">
+      <div class="scene-num">Scene 06</div>
+      <div class="narrative-title">仲間が、声をかけて<br>くれた。</div>
+      <div class="narrative-body">「一緒に上手くなろうぜ」<br>悔しさが、燃料に変わった。<br>「よし、がんばるぞ！」</div>
+    </div>
+  </div>
+
+  <div class="scene scene-game" id="scene-6">
+    <div class="season">Summer · 8月</div>
+    <div class="sticker-wrap" id="sw-6">
+      <div class="sticker-canvas">
+        <img class="sticker-img" id="img-6" src="stickers.png" alt="sticker" style="left:-200%;top:-300%">
+      </div>
+      <div class="sticker-label">いくぞー！</div>
+    </div>
+    <div class="narrative">
+      <div class="scene-num">Scene 07</div>
+      <div class="narrative-title">地区大会、決勝。<br>ついにこの日が来た。</div>
+      <div class="narrative-body">ユニフォームを着て、コートに立つ。<br>「全力で行くぞ、みんな！<br>いくぞー！」</div>
+    </div>
+  </div>
+
+  <div class="scene scene-game" id="scene-7">
+    <div class="season">Summer · 8月</div>
+    <div class="sticker-wrap" id="sw-7">
+      <div class="sticker-canvas">
+        <img class="sticker-img" id="img-7" src="stickers.png" alt="sticker" style="left:-100%;top:-200%">
+      </div>
+      <div class="sticker-label">！？</div>
+    </div>
+    <div class="narrative">
+      <div class="scene-num">Scene 08</div>
+      <div class="narrative-title">最終盤、相手が<br>怒濤の反撃！</div>
+      <div class="narrative-body">あと1点差に追い上げられた。<br>「！？ まじか...！」<br>心臓が止まりそうだった。</div>
+    </div>
+  </div>
+
+  <div class="scene scene-victory" id="scene-8">
+    <div class="season">Summer · 8月</div>
+    <div class="sticker-wrap" id="sw-8">
+      <div class="sticker-canvas">
+        <img class="sticker-img" id="img-8" src="stickers.png" alt="sticker" style="left:-200%;top:-100%">
+      </div>
+      <div class="sticker-label">やったー！</div>
+    </div>
+    <div class="narrative">
+      <div class="scene-num">Scene 09</div>
+      <div class="narrative-title">試合終了の笛が<br>鳴り響いた。</div>
+      <div class="narrative-body">全力を出し切った。勝った。<br>みんなで抱き合って泣いた。<br>「やったーーー！！！」</div>
+    </div>
+  </div>
+
+  <div class="scene scene-victory" id="scene-9">
+    <div class="season">Summer · 8月</div>
+    <div class="sticker-wrap" id="sw-9">
+      <div class="sticker-canvas">
+        <img class="sticker-img" id="img-9" src="stickers.png" alt="sticker" style="left:-200%;top:-200%">
+      </div>
+      <div class="sticker-label">グッ！</div>
+    </div>
+    <div class="narrative">
+      <div class="scene-num">Scene 10</div>
+      <div class="narrative-title">地区優勝。<br>やり遂げた。</div>
+      <div class="narrative-body">キャプテンとして最高の夏だった。<br>「グッ！これが青春ってやつだ」</div>
+    </div>
+  </div>
+
+  <div class="scene scene-after" id="scene-10">
+    <div class="season">Summer · 8月</div>
+    <div class="sticker-wrap" id="sw-10">
+      <div class="sticker-canvas">
+        <img class="sticker-img" id="img-10" src="stickers.png" alt="sticker" style="left:-200%;top:0%">
+      </div>
+      <div class="sticker-label">おつかれさま！</div>
+    </div>
+    <div class="narrative">
+      <div class="scene-num">Scene 11</div>
+      <div class="narrative-title">夜、みんなで<br>打ち上げ。</div>
+      <div class="narrative-body">先生も笑っていた。<br>「本当におつかれさまでした！<br>よくやったぞ」</div>
+    </div>
+  </div>
+
+  <div class="scene scene-after" id="scene-11">
+    <div class="season">Summer · 8月</div>
+    <div class="sticker-wrap" id="sw-11">
+      <div class="sticker-canvas">
+        <img class="sticker-img" id="img-11" src="stickers.png" alt="sticker" style="left:-100%;top:-300%">
+      </div>
+      <div class="sticker-label">ぷはー！</div>
+    </div>
+    <div class="narrative">
+      <div class="scene-num">Scene 12</div>
+      <div class="narrative-title">ジュースで<br>乾杯した。</div>
+      <div class="narrative-body">みんなの笑顔が眩しかった。<br>この瞬間をずっと覚えていたい。<br>「ぷはー！最高だ！」</div>
+    </div>
+  </div>
+
+  <div class="scene scene-spring" id="scene-12">
+    <div class="season">Summer · 8月</div>
+    <div class="sticker-wrap" id="sw-12">
+      <div class="sticker-canvas">
+        <img class="sticker-img" id="img-12" src="stickers.png" alt="sticker" style="left:0%;top:-100%">
+      </div>
+      <div class="sticker-label">ありがとう！</div>
+    </div>
+    <div class="narrative">
+      <div class="scene-num">Scene 13</div>
+      <div class="narrative-title">仲間への感謝を<br>伝えた。</div>
+      <div class="narrative-body">「みんながいたから勝てた。<br>本当にありがとう！」<br>照れ臭かったけど、言えた。</div>
+    </div>
+  </div>
+
+  <div class="scene scene-goodbye" id="scene-13">
+    <div class="season">Autumn · 9月</div>
+    <div class="sticker-wrap" id="sw-13">
+      <div class="sticker-canvas">
+        <img class="sticker-img" id="img-13" src="stickers.png" alt="sticker" style="left:-300%;top:-300%">
+      </div>
+      <div class="sticker-label">またね～</div>
+    </div>
+    <div class="narrative">
+      <div class="scene-num">Scene 14</div>
+      <div class="narrative-title">引退の日、<br>グラウンドで別れた。</div>
+      <div class="narrative-body">「またね〜！」と手を振った。<br>あの夏の青春は、<br>永遠に胸の中に生きている。</div>
+    </div>
+  </div>
+
+  <!-- Progress bar -->
+  <div id="progress" style="width:0%"></div>
+
+  <!-- End screen -->
+  <div id="end-screen">
+    <h2>あの夏の<br>青春物語<br>〜 完 〜</h2>
+    <p>昭和54年・55年生まれ<br>緑ヶ丘中学校<br>あの頃の自分たちへ</p>
+    <button id="replay-btn" onclick="replay()">↺ もう一度見る</button>
+  </div>
+</div>
+
+<script>
+  let stickerSrc = 'stickers.png';
+
+  function loadImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    stickerSrc = url;
+    // Update all sticker images
+    document.querySelectorAll('.sticker-img').forEach(img => {
+      img.src = url;
+    });
+    document.getElementById('file-hint').textContent = '✓ 画像を読み込みました';
+    document.getElementById('file-hint').style.color = 'rgba(100,255,150,0.6)';
+    document.getElementById('upload-label').textContent = '✓ ' + file.name;
+    document.getElementById('upload-label').style.borderColor = 'rgba(100,255,150,0.3)';
+    document.getElementById('upload-label').style.color = 'rgba(100,255,150,0.6)';
+  }
+
+  const TOTAL_SCENES = 14;
+  const SCENE_DURATION = 4500; // ms per scene
+  let currentScene = -1;
+  let timer = null;
+  let isPlaying = false;
+
+  // Generate stars
+  const starsContainer = document.getElementById('stars');
+  for (let i = 0; i < 60; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.cssText = `
+      left: ${Math.random() * 100}%;
+      top: ${Math.random() * 100}%;
+      --dur: ${2 + Math.random() * 3}s;
+      --op: ${0.1 + Math.random() * 0.5};
+      animation-delay: ${Math.random() * 3}s;
+    `;
+    starsContainer.appendChild(star);
+  }
+
+  function startStory() {
+    const titleScreen = document.getElementById('title-screen');
+    titleScreen.style.opacity = '0';
+    titleScreen.style.pointerEvents = 'none';
+    setTimeout(() => {
+      titleScreen.style.display = 'none';
+      isPlaying = true;
+      showScene(0);
+    }, 1500);
+  }
+
+  function showScene(index) {
+    if (index >= TOTAL_SCENES) {
+      showEnd();
+      return;
+    }
+
+    // Hide previous scene
+    if (currentScene >= 0) {
+      const prev = document.getElementById(`scene-${currentScene}`);
+      prev.classList.remove('active');
+      const prevSw = document.getElementById(`sw-${currentScene}`);
+      prevSw.classList.remove('animate');
+    }
+
+    currentScene = index;
+
+    // Show current scene
+    const scene = document.getElementById(`scene-${index}`);
+    scene.classList.add('active');
+
+    // Trigger sticker animation
+    setTimeout(() => {
+      const sw = document.getElementById(`sw-${index}`);
+      sw.classList.remove('animate');
+      void sw.offsetWidth; // reflow
+      sw.classList.add('animate');
+    }, 100);
+
+    // Update progress bar
+    const progress = ((index + 1) / TOTAL_SCENES) * 100;
+    document.getElementById('progress').style.width = progress + '%';
+
+    // Sparkles on victory scenes
+    if (index === 8 || index === 9) {
+      addSparkles();
+    }
+
+    // Auto-advance
+    clearTimeout(timer);
+    timer = setTimeout(() => showScene(index + 1), SCENE_DURATION);
+
+    // Click to advance
+    const stage = document.getElementById('stage');
+    stage.onclick = (e) => {
+      if (!e.target.closest('button')) {
+        clearTimeout(timer);
+        showScene(currentScene + 1);
+      }
+    };
+  }
+
+  function addSparkles() {
+    const emojis = ['✨', '🌟', '⭐', '💫', '🎉'];
+    for (let i = 0; i < 6; i++) {
+      setTimeout(() => {
+        const spark = document.createElement('div');
+        spark.className = 'sparkle';
+        spark.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        spark.style.left = (10 + Math.random() * 80) + '%';
+        spark.style.top = (10 + Math.random() * 60) + '%';
+        document.getElementById('stage').appendChild(spark);
+        setTimeout(() => spark.remove(), 1200);
+      }, i * 150);
+    }
+  }
+
+  function showEnd() {
+    if (currentScene >= 0) {
+      document.getElementById(`scene-${currentScene}`).classList.remove('active');
+    }
+    document.getElementById('end-screen').classList.add('show');
+    document.getElementById('progress').style.width = '100%';
+    document.getElementById('stage').onclick = null;
+  }
+
+  function replay() {
+    document.getElementById('end-screen').classList.remove('show');
+    document.getElementById('progress').style.width = '0%';
+    currentScene = -1;
+    showScene(0);
+  }
+</script>
+</body>
+</html>
