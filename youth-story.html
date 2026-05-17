@@ -405,6 +405,60 @@
     z-index: 80;
   }
 
+  /* Mute button */
+  #mute-btn {
+    position: absolute;
+    bottom: 18px;
+    right: 16px;
+    z-index: 60;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.7);
+    font-size: 18px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    backdrop-filter: blur(6px);
+  }
+  #mute-btn.visible { display: flex; }
+  #mute-btn:active { background: rgba(100,180,255,0.25); }
+
+  /* Audio upload row in title */
+  #audio-row {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  #audio-upload { display: none; }
+
+  #audio-label {
+    font-size: clamp(11px, 2.8vw, 12px);
+    color: rgba(255,255,255,0.35);
+    border: 1px dashed rgba(255,255,255,0.18);
+    padding: 10px 18px;
+    min-height: 44px;
+    border-radius: 22px;
+    cursor: pointer;
+    transition: all 0.25s;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #audio-label:active {
+    color: rgba(255,255,255,0.65);
+    border-color: rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.05);
+  }
+
   /* Season badge — slightly smaller on narrow screens */
   @media (max-width: 360px) {
     .season { font-size: 9px; }
@@ -426,6 +480,10 @@
     <div id="file-hint">※ スティッカー画像を選択してください</div>
     <input type="file" id="img-upload" accept="image/*" onchange="loadImage(event)">
     <label for="img-upload" id="upload-label">📎 画像を選択する</label>
+    <div id="audio-row">
+      <input type="file" id="audio-upload" accept="audio/*" onchange="loadAudio(event)">
+      <label for="audio-upload" id="audio-label">🎵 BGM音楽を選択（任意）</label>
+    </div>
   </div>
 
   <!-- Scenes -->
@@ -639,6 +697,9 @@
     </div>
   </div>
 
+  <!-- Mute button -->
+  <button id="mute-btn" onclick="toggleMute()" aria-label="ミュート切替">🔊</button>
+
   <!-- Progress bar -->
   <div id="progress" style="width:0%"></div>
 
@@ -651,6 +712,146 @@
 </div>
 
 <script>
+  // ── BGM ──────────────────────────────────────────────
+  let bgmCtx = null;
+  let bgmGain = null;
+  let bgmAudio = null;   // uploaded audio element
+  let bgmMuted = false;
+  let bgmScheduleId = null;
+
+  function loadAudio(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (bgmAudio) { bgmAudio.pause(); bgmAudio = null; }
+    bgmAudio = new Audio(URL.createObjectURL(file));
+    bgmAudio.loop = true;
+    bgmAudio.volume = 0;
+    const label = document.getElementById('audio-label');
+    label.textContent = '✓ ' + file.name;
+    label.style.color = 'rgba(100,255,150,0.65)';
+    label.style.borderColor = 'rgba(100,255,150,0.3)';
+  }
+
+  function startBGM() {
+    if (bgmAudio) {
+      // ユーザー指定の音楽
+      bgmAudio.play().catch(() => {});
+      fadeAudioEl(bgmAudio, 0, 0.55, 3000);
+    } else {
+      // Web Audio API 自動生成BGM
+      bgmCtx = new (window.AudioContext || window.webkitAudioContext)();
+      bgmGain = bgmCtx.createGain();
+      bgmGain.gain.setValueAtTime(0, bgmCtx.currentTime);
+      bgmGain.gain.linearRampToValueAtTime(0.22, bgmCtx.currentTime + 3);
+      bgmGain.connect(bgmCtx.destination);
+
+      // Delay (reverb風)
+      const delay = bgmCtx.createDelay(1.2);
+      delay.delayTime.value = 0.42;
+      const fb = bgmCtx.createGain(); fb.gain.value = 0.28;
+      const dryWet = bgmCtx.createGain(); dryWet.gain.value = 0.35;
+      delay.connect(fb); fb.connect(delay);
+      delay.connect(dryWet); dryWet.connect(bgmGain);
+
+      // Amペンタトニック メロディーループ (72 BPM)
+      const B = 60 / 72; // 1拍 = 0.833s
+      const mel = [
+        [220.00,1],[261.63,1],[329.63,2],
+        [293.66,1],[261.63,1],[220.00,2],
+        [329.63,1],[392.00,2],[329.63,1],
+        [293.66,1],[261.63,1],[220.00,4],
+        [0,2],
+      ];
+      const melTotal = mel.reduce((s,[,d]) => s + d, 0);
+
+      // コード (Am - F - C - G)
+      const chordProg = [
+        [[110,130.81,164.81],[4]],  // Am
+        [[87.31,130.81,174.61],[4]],// F
+        [[130.81,164.81,196],[4]],  // C
+        [[98,146.83,196],[4]],      // G
+      ];
+      const chordTotal = chordProg.reduce((s,[,[d]]) => s + d, 0);
+
+      function scheduleNote(freq, start, dur, vol, target) {
+        if (freq === 0) return;
+        const osc = bgmCtx.createOscillator();
+        const env = bgmCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        env.gain.setValueAtTime(0, start);
+        env.gain.linearRampToValueAtTime(vol, start + 0.04);
+        env.gain.setValueAtTime(vol, start + dur * B - 0.12);
+        env.gain.linearRampToValueAtTime(0, start + dur * B);
+        osc.connect(env); env.connect(target); env.connect(delay);
+        osc.start(start); osc.stop(start + dur * B + 0.01);
+      }
+
+      let nextMel = bgmCtx.currentTime + 0.5;
+      let nextChord = bgmCtx.currentTime + 0.5;
+
+      function scheduleMelody() {
+        let t = nextMel;
+        mel.forEach(([f, d]) => { scheduleNote(f, t, d, 0.28, bgmGain); t += d * B; });
+        nextMel = t;
+      }
+
+      function scheduleChords() {
+        let t = nextChord;
+        chordProg.forEach(([freqs,[d]]) => {
+          freqs.forEach(f => scheduleNote(f, t, d, 0.07, bgmGain));
+          t += d * B;
+        });
+        nextChord = t;
+      }
+
+      scheduleMelody(); scheduleChords();
+
+      bgmScheduleId = setInterval(() => {
+        if (bgmCtx.currentTime + 6 > nextMel)   scheduleMelody();
+        if (bgmCtx.currentTime + 6 > nextChord) scheduleChords();
+      }, 1500);
+    }
+
+    document.getElementById('mute-btn').classList.add('visible');
+  }
+
+  function stopBGM() {
+    if (bgmAudio) {
+      fadeAudioEl(bgmAudio, bgmAudio.volume, 0, 1200);
+      setTimeout(() => { if (bgmAudio) bgmAudio.pause(); }, 1300);
+    }
+    if (bgmCtx) {
+      clearInterval(bgmScheduleId);
+      bgmGain.gain.linearRampToValueAtTime(0, bgmCtx.currentTime + 1.2);
+      setTimeout(() => bgmCtx.close(), 1400);
+      bgmCtx = null;
+    }
+  }
+
+  function toggleMute() {
+    bgmMuted = !bgmMuted;
+    document.getElementById('mute-btn').textContent = bgmMuted ? '🔇' : '🔊';
+    if (bgmAudio) {
+      bgmAudio.volume = bgmMuted ? 0 : 0.55;
+    } else if (bgmGain) {
+      bgmGain.gain.linearRampToValueAtTime(bgmMuted ? 0 : 0.22, bgmCtx.currentTime + 0.3);
+    }
+  }
+
+  function fadeAudioEl(el, from, to, ms) {
+    const steps = 30;
+    const interval = ms / steps;
+    const delta = (to - from) / steps;
+    let cur = from;
+    const id = setInterval(() => {
+      cur += delta;
+      el.volume = Math.max(0, Math.min(1, cur));
+      if ((delta > 0 && cur >= to) || (delta < 0 && cur <= to)) clearInterval(id);
+    }, interval);
+  }
+
+  // ── 画像 ──────────────────────────────────────────────
   let stickerSrc = 'stickers.png';
 
   function loadImage(event) {
@@ -694,6 +895,7 @@
     const titleScreen = document.getElementById('title-screen');
     titleScreen.style.opacity = '0';
     titleScreen.style.pointerEvents = 'none';
+    startBGM();
     setTimeout(() => {
       titleScreen.style.display = 'none';
       isPlaying = true;
@@ -781,12 +983,15 @@
     document.getElementById('end-screen').classList.add('show');
     document.getElementById('progress').style.width = '100%';
     document.getElementById('stage').onclick = null;
+    document.getElementById('stage').ontouchend = null;
+    stopBGM();
   }
 
   function replay() {
     document.getElementById('end-screen').classList.remove('show');
     document.getElementById('progress').style.width = '0%';
     currentScene = -1;
+    startBGM();
     showScene(0);
   }
 </script>
