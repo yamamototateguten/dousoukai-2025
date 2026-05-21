@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iPhone 17 消音にする方法</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Zen+Kaku+Gothic+New:wght@400;700;900&display=swap');
+
+  :root {
+    --pink: #e8415a;
+    --light-pink: #f7c5cd;
+    --cream: #fdf6ee;
+    --blue: #6ab4c8;
+    --gold: #d4a843;
+    --dark: #2a1a1a;
+    --gray: #666;
+    --green: #4caf7d;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--cream);
+    color: var(--dark);
+    padding: 20px;
+    min-height: 100vh;
+  }
+
+  .page {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  /* ===== Header ===== */
+  .header {
+    text-align: center;
+    padding: 30px 20px 24px;
+    background: white;
+    border-radius: 16px;
+    border: 3px solid var(--blue);
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 8px;
+    background: repeating-linear-gradient(90deg, var(--blue) 0 20px, var(--pink) 20px 40px, #a8d8e8 40px 60px);
+  }
+  .header-badge {
+    display: inline-block;
+    background: var(--blue);
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 16px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+  .header h1 {
+    font-family: 'Zen Kaku Gothic New', sans-serif;
+    font-size: 30px;
+    font-weight: 900;
+    color: var(--dark);
+    line-height: 1.3;
+  }
+  .header h1 span { color: var(--blue); }
+  .header-sub {
+    font-size: 13px;
+    color: var(--gray);
+    margin-top: 6px;
+  }
+
+  /* ===== Section Card ===== */
+  .section-card {
+    background: white;
+    border-radius: 16px;
+    border: 2px solid #eee;
+    padding: 24px 20px;
+    margin-bottom: 20px;
+  }
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--blue);
+    letter-spacing: 2px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #d6edf5;
+  }
+
+  /* ===== Method number badge ===== */
+  .method-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .method-num {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 900;
+    flex-shrink: 0;
+    color: white;
+  }
+  .num-blue  { background: var(--blue); }
+  .num-pink  { background: var(--pink); }
+  .num-gold  { background: var(--gold); }
+  .method-title {
+    font-size: 20px;
+    font-weight: 900;
+  }
+  .method-title small {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--gray);
+    margin-top: 2px;
+  }
+
+  /* ===== Tag ===== */
+  .tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin: 2px;
+  }
+  .tag-blue { background: #d6edf5; color: #3a8aaa; }
+  .tag-pink { background: var(--light-pink); color: var(--pink); }
+  .tag-gold { background: #fdf0d0; color: #a07820; }
+  .tag-green { background: #e8f5e9; color: #2e7d52; }
+
+  /* ===== iPhone SVG wrapper ===== */
+  .iphone-scene {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+  }
+  .iphone-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .iphone-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray);
+    text-align: center;
+  }
+
+  /* ===== Step list ===== */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #f9f9f9;
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+  .step-num {
+    min-width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 900;
+    color: white;
+    flex-shrink: 0;
+  }
+  .step-text {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #333;
+  }
+  .step-text strong { color: var(--dark); }
+  .step-text code {
+    background: #eee;
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+
+  /* ===== Tip box ===== */
+  .tip {
+    background: linear-gradient(135deg, #d6edf5 0%, #edf7fb 100%);
+    border: 2px solid #b0d8e8;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 14px;
+    font-size: 13px;
+    color: #2a5a6a;
+    line-height: 1.7;
+  }
+  .tip strong { color: #1a4a5a; }
+
+  /* ===== Comparison table ===== */
+  .compare {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 13px;
+  }
+  .compare th {
+    background: var(--blue);
+    color: white;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 700;
+  }
+  .compare th:first-child { border-radius: 10px 0 0 0; }
+  .compare th:last-child  { border-radius: 0 10px 0 0; }
+  .compare td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #eee;
+    vertical-align: top;
+    line-height: 1.6;
+  }
+  .compare tr:last-child td { border-bottom: none; }
+  .compare tr:nth-child(even) td { background: #f5fbfd; }
+
+  /* ===== Arrow ===== */
+  .arrow-down {
+    text-align: center;
+    font-size: 24px;
+    color: #ccc;
+    margin: 4px 0;
+    line-height: 1;
+  }
+
+  /* ===== Screen mockup ===== */
+  .screen-mockup {
+    background: #1a1a2e;
+    border-radius: 12px;
+    padding: 12px;
+    color: white;
+    font-size: 12px;
+    margin: 10px 0;
+  }
+  .screen-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    margin-bottom: 6px;
+  }
+  .screen-row:last-child { margin-bottom: 0; }
+  .screen-icon { font-size: 20px; margin-right: 8px; }
+  .screen-label { font-size: 13px; font-weight: 700; }
+  .screen-toggle {
+    width: 40px;
+    height: 22px;
+    border-radius: 11px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .screen-toggle::after {
+    content: '';
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: white;
+    position: absolute;
+    top: 2px;
+  }
+  .toggle-on  { background: #4caf7d; }
+  .toggle-on::after  { right: 2px; }
+  .toggle-off { background: #666; }
+  .toggle-off::after { left: 2px; }
+
+  /* ===== Footer ===== */
+  .footer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--gray);
+    padding: 10px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ===== Header ===== -->
+  <div class="header">
+    <div class="header-badge">📱 iPhone 17 かんたんガイド</div>
+    <h1><span>消音（マナーモード）</span>に<br>する方法</h1>
+    <div class="header-sub">3つの方法を図解で説明します</div>
+  </div>
+
+  <!-- ===== まず知っておくこと ===== -->
+  <div class="section-card" style="border-color:#d6edf5;">
+    <div class="section-title">📌 まず確認！ iPhone 17 のボタン配置</div>
+
+    <!-- iPhone Front + Side SVG -->
+    <div class="iphone-scene">
+
+      <!-- 正面図 -->
+      <div class="iphone-wrap">
+        <svg width="130" height="270" viewBox="0 0 130 270" xmlns="http://www.w3.org/2000/svg">
+          <!-- 本体 -->
+          <rect x="10" y="10" width="110" height="250" rx="24" ry="24" fill="#1c1c1e" />
+          <rect x="16" y="16" width="98" height="238" rx="20" ry="20" fill="#2c2c2e" />
+          <!-- 画面 -->
+          <rect x="18" y="18" width="94" height="234" rx="18" ry="18" fill="#1a1a2e" />
+          <!-- Dynamic Island -->
+          <rect x="42" y="28" width="46" height="16" rx="8" ry="8" fill="#000" />
+          <!-- 音量ボタン（左） -->
+          <rect x="4" y="80" width="6" height="24" rx="3" fill="#555" />
+          <rect x="4" y="112" width="6" height="24" rx="3" fill="#555" />
+          <!-- アクションボタン（左上）-->
+          <rect x="4" y="52" width="6" height="18" rx="3" fill="#6ab4c8" />
+          <!-- サイドボタン（右） -->
+          <rect x="120" y="90" width="6" height="40" rx="3" fill="#555" />
+          <!-- ホーム画面風アイコン -->
+          <rect x="28" y="60" width="18" height="18" rx="5" fill="#6ab4c8" opacity="0.6" />
+          <rect x="52" y="60" width="18" height="18" rx="5" fill="#e8415a" opacity="0.6" />
+          <rect x="76" y="60" width="18" height="18" rx="5" fill="#d4a843" opacity="0.6" />
+          <rect x="28" y="84" width="18" height="18" rx="5" fill="#4caf7d" opacity="0.6" />
+          <rect x="52" y="84" width="18" height="18" rx="5" fill="#9c6fbd" opacity="0.6" />
+          <rect x="76" y="84" width="18" height="18" rx="5" fill="#e8415a" opacity="0.6" />
+          <!-- バッテリー等 UI -->
+          <rect x="30" y="228" width="70" height="6" rx="3" fill="#333" />
+          <rect x="30" y="228" width="45" height="6" rx="3" fill="#4caf7d" />
+        </svg>
+        <div class="iphone-label">正面</div>
+      </div>
+
+      <!-- 左側面図 -->
+      <div class="iphone-wrap">
+        <svg width="70" height="270" viewBox="0 0 70 270" xmlns="http://www.w3.org/2000/svg">
+          <!-- 本体側面 -->
+          <rect x="20" y="10" width="30" height="250" rx="14" ry="14" fill="#1c1c1e" />
+          <rect x="24" y="14" width="22" height="242" rx="11" ry="11" fill="#2c2c2e" />
+
+          <!-- アクションボタン（上） -->
+          <rect x="8" y="52" width="12" height="20" rx="4" fill="#6ab4c8" />
+          <text x="35" y="64" font-size="9" fill="#6ab4c8" font-weight="bold" font-family="sans-serif">アクション</text>
+          <text x="35" y="75" font-size="9" fill="#6ab4c8" font-family="sans-serif">ボタン</text>
+          <!-- アクションボタンから矢印 -->
+          <line x1="20" y1="62" x2="34" y2="62" stroke="#6ab4c8" stroke-width="1.5" stroke-dasharray="2,2"/>
+
+          <!-- 音量ボタン -->
+          <rect x="8" y="84" width="12" height="22" rx="4" fill="#555" />
+          <rect x="8" y="112" width="12" height="22" rx="4" fill="#555" />
+          <text x="35" y="97" font-size="9" fill="#888" font-family="sans-serif">音量 ＋</text>
+          <text x="35" y="125" font-size="9" fill="#888" font-family="sans-serif">音量 −</text>
+          <line x1="20" y1="95" x2="34" y2="95" stroke="#aaa" stroke-width="1" stroke-dasharray="2,2"/>
+          <line x1="20" y1="123" x2="34" y2="123" stroke="#aaa" stroke-width="1" stroke-dasharray="2,2"/>
+
+          <!-- 右側ラベルなし（シンプルに本体のみ） -->
+        </svg>
+        <div class="iphone-label">左側面</div>
+      </div>
+
+    </div>
+
+    <div class="tip">
+      💡 <strong>iPhone 17 のポイント：</strong>
+      昔の iPhone にあった「リング/サイレントスイッチ（カチッと動くやつ）」は廃止されました。
+      代わりに <strong style="color:var(--blue)">アクションボタン</strong>（左上の長細いボタン）があります。
+      消音の方法が少し変わっているので、下の3つの方法を覚えておきましょう！
+    </div>
+  </div>
+
+
+  <!-- ===== 方法1 ===== -->
+  <div class="section-card" style="border-left: 5px solid var(--blue);">
+    <div class="method-header">
+      <div class="method-num num-blue">1</div>
+      <div class="method-title">
+        アクションボタンを押す
+        <small>⚡ いちばん速い方法</small>
+      </div>
+    </div>
+    <div>
+      <span class="tag tag-blue">左上のボタン</span>
+      <span class="tag tag-green">1タップ</span>
+      <span class="tag tag-pink">要：事前設定</span>
+    </div>
+
+    <!-- 図解 -->
+    <div class="iphone-scene" style="margin: 20px 0 10px;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <svg width="160" height="240" viewBox="0 0 160 240" xmlns="http://www.w3.org/2000/svg">
+          <!-- 本体 -->
+          <rect x="30" y="10" width="100" height="220" rx="22" ry="22" fill="#1c1c1e" />
+          <rect x="36" y="16" width="88" height="208" rx="18" ry="18" fill="#2c2c2e" />
+          <rect x="38" y="18" width="84" height="204" rx="16" ry="16" fill="#1a1a2e" />
+          <!-- Dynamic Island -->
+          <rect x="52" y="26" width="36" height="14" rx="7" fill="#000" />
+          <!-- アクションボタン（青く強調） -->
+          <rect x="18" y="46" width="12" height="22" rx="5" fill="#6ab4c8" />
+          <!-- 強調リング -->
+          <circle cx="24" cy="57" r="14" fill="none" stroke="#6ab4c8" stroke-width="2.5" stroke-dasharray="4,2" opacity="0.8"/>
+          <!-- 音量ボタン -->
+          <rect x="18" y="76" width="12" height="20" rx="4" fill="#555" />
+          <rect x="18" y="102" width="12" height="20" rx="4" fill="#555" />
+          <!-- サイドボタン -->
+          <rect x="130" y="82" width="12" height="36" rx="4" fill="#555" />
+          <!-- 消音アイコン表示 -->
+          <text x="80" y="100" font-size="36" text-anchor="middle" fill="white" opacity="0.9">🔕</text>
+          <text x="80" y="128" font-size="11" text-anchor="middle" fill="#6ab4c8" font-family="sans-serif" font-weight="bold">消音モード</text>
+          <!-- 指のアニメーション風 -->
+          <ellipse cx="15" cy="57" rx="8" ry="10" fill="#f5cba7" opacity="0.9" />
+          <!-- 矢印ラベル -->
+          <text x="95" y="54" font-size="10" fill="#6ab4c8" font-family="sans-serif" font-weight="bold">← アクションボタン</text>
+        </svg>
+        <div class="iphone-label" style="color:var(--blue);font-size:13px;">ここを押す！</div>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num" style="background:var(--blue);">①</div>
+        <div class="step-text">
+          <strong>事前設定：</strong>「設定」アプリ → <code>アクションボタン</code> → <code>消音</code> を選んでおく
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:var(--blue);">②</div>
+        <div class="step-text">
+          本体<strong>左上のアクションボタン</strong>（細長いボタン）を<strong>長押し</strong>する
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:var(--blue);">③</div>
+        <div class="step-text">
+          画面に🔕が表示されれば<strong>消音モードON</strong>！もう一度押すと解除できる
+        </div>
+      </div>
+    </div>
+    <div class="tip">
+      ✅ 一度設定しておけば、<strong>ボタン1つで瞬時に切り替え</strong>できるのでいちばん便利！
+    </div>
+  </div>
+
+
+  <!-- ===== 方法2 ===== -->
+  <div class="section-card" style="border-left: 5px solid var(--pink);">
+    <div class="method-header">
+      <div class="method-num num-pink">2</div>
+      <div class="method-title">
+        コントロールセンターから操作
+        <small>📲 設定なしでもOK！</small>
+      </div>
+    </div>
+    <div>
+      <span class="tag tag-pink">右上から下にスワイプ</span>
+      <span class="tag tag-green">設定不要</span>
+    </div>
+
+    <!-- 図解 -->
+    <div class="iphone-scene" style="margin: 20px 0 10px;">
+
+      <!-- STEP A: スワイプ -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <svg width="130" height="220" viewBox="0 0 130 220" xmlns="http://www.w3.org/2000/svg">
+          <rect x="15" y="10" width="100" height="200" rx="22" fill="#1c1c1e" />
+          <rect x="21" y="16" width="88" height="188" rx="18" fill="#2c2c2e" />
+          <rect x="23" y="18" width="84" height="184" rx="16" fill="#1a1a2e" />
+          <rect x="47" y="25" width="36" height="13" rx="6" fill="#000" />
+          <!-- 右上から指が下に動く矢印 -->
+          <text x="97" y="36" font-size="18" text-anchor="middle" fill="#f5cba7">👆</text>
+          <path d="M97 44 Q97 70 97 80" stroke="#e8415a" stroke-width="2" fill="none" stroke-dasharray="4,2" marker-end="url(#arr)"/>
+          <defs>
+            <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#e8415a"/>
+            </marker>
+          </defs>
+          <!-- 右上コーナー強調 -->
+          <circle cx="97" cy="30" r="12" fill="none" stroke="#e8415a" stroke-width="2" stroke-dasharray="3,2"/>
+          <text x="65" y="165" font-size="11" text-anchor="middle" fill="#888" font-family="sans-serif">右上 → 下に</text>
+          <text x="65" y="178" font-size="11" text-anchor="middle" fill="#888" font-family="sans-serif">スワイプ</text>
+        </svg>
+        <div class="iphone-label">① 右上から下へ<br>スワイプ</div>
+      </div>
+
+      <div style="font-size:28px;color:#ddd;align-self:center;">→</div>
+
+      <!-- STEP B: コントロールセンター画面 -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <svg width="130" height="220" viewBox="0 0 130 220" xmlns="http://www.w3.org/2000/svg">
+          <rect x="15" y="10" width="100" height="200" rx="22" fill="#1c1c1e" />
+          <rect x="21" y="16" width="88" height="188" rx="18" fill="#111" />
+          <!-- コントロールセンター風UI -->
+          <!-- 時刻 -->
+          <text x="35" y="45" font-size="22" font-weight="bold" fill="white" font-family="sans-serif">9:41</text>
+          <text x="35" y="60" font-size="10" fill="#aaa" font-family="sans-serif">水曜日 5月21日</text>
+          <!-- ボタングリッド -->
+          <!-- WiFi -->
+          <rect x="28" y="72" width="30" height="30" rx="10" fill="#2c2c2e" />
+          <text x="43" y="93" font-size="16" text-anchor="middle">📶</text>
+          <!-- Bluetooth -->
+          <rect x="64" y="72" width="30" height="30" rx="10" fill="#2c2c2e" />
+          <text x="79" y="93" font-size="16" text-anchor="middle">🔵</text>
+          <!-- 🔕 消音ボタン（強調） -->
+          <rect x="28" y="108" width="30" height="30" rx="10" fill="#6ab4c8" />
+          <text x="43" y="128" font-size="16" text-anchor="middle">🔕</text>
+          <!-- 強調円 -->
+          <circle cx="43" cy="123" r="20" fill="none" stroke="#6ab4c8" stroke-width="2.5" stroke-dasharray="4,2"/>
+          <!-- フォーカス -->
+          <rect x="64" y="108" width="30" height="30" rx="10" fill="#2c2c2e" />
+          <text x="79" y="128" font-size="16" text-anchor="middle">🌙</text>
+          <!-- 輝度など -->
+          <rect x="28" y="144" width="66" height="14" rx="7" fill="#2c2c2e" />
+          <rect x="28" y="144" width="40" height="14" rx="7" fill="#555" />
+          <rect x="28" y="163" width="66" height="14" rx="7" fill="#2c2c2e" />
+          <rect x="28" y="163" width="55" height="14" rx="7" fill="#555" />
+          <!-- 矢印ラベル -->
+          <text x="65" y="200" font-size="10" text-anchor="middle" fill="#6ab4c8" font-family="sans-serif" font-weight="bold">🔕 をタップ！</text>
+        </svg>
+        <div class="iphone-label">② 🔕ボタンを<br>タップ</div>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num" style="background:var(--pink);">①</div>
+        <div class="step-text">
+          画面の<strong>右上のすみ</strong>から<strong>下にスワイプ</strong>する
+          → コントロールセンターが開く
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:var(--pink);">②</div>
+        <div class="step-text">
+          <strong>🔕（ベルに斜線）のボタン</strong>をタップする
+          → 色が変わって消音ON！もう一度タップで解除
+        </div>
+      </div>
+    </div>
+    <div class="tip">
+      ✅ アクションボタンの設定をしていなくても使える方法。<strong>どこにいても使えるので覚えておくと安心！</strong>
+    </div>
+  </div>
+
+
+  <!-- ===== 方法3 ===== -->
+  <div class="section-card" style="border-left: 5px solid var(--gold);">
+    <div class="method-header">
+      <div class="method-num num-gold">3</div>
+      <div class="method-title">
+        設定アプリから変更
+        <small>⚙️ じっくり確認したいとき</small>
+      </div>
+    </div>
+    <div>
+      <span class="tag tag-gold">設定アプリ</span>
+      <span class="tag tag-green">確実な方法</span>
+    </div>
+
+    <div class="steps" style="margin-top:14px;">
+      <div class="step">
+        <div class="step-num" style="background:var(--gold);">①</div>
+        <div class="step-text">
+          ホーム画面の <strong>「設定」⚙️</strong> アプリを開く
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:var(--gold);">②</div>
+        <div class="step-text">
+          <code>サウンドと触覚</code>（音 & バイブの設定） をタップ
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num" style="background:var(--gold);">③</div>
+        <div class="step-text">
+          「<strong>着信音と通知音</strong>」のスライダーを<strong>いちばん左（0）</strong>にするか、
+          「消音モード」のスイッチをONにする
+        </div>
+      </div>
+    </div>
+
+    <!-- 設定画面モック -->
+    <div class="screen-mockup" style="margin-top:16px;">
+      <div style="font-size:11px;color:#888;margin-bottom:8px;padding-left:4px;">⚙️ 設定 → サウンドと触覚</div>
+      <div class="screen-row">
+        <div style="display:flex;align-items:center;">
+          <span class="screen-icon">🔔</span>
+          <span class="screen-label">着信音と通知音</span>
+        </div>
+        <div style="font-size:12px;color:#aaa;">━━○　0</div>
+      </div>
+      <div class="screen-row" style="background:rgba(106,180,200,0.25);border:1px solid #6ab4c8;">
+        <div style="display:flex;align-items:center;">
+          <span class="screen-icon">🔕</span>
+          <span class="screen-label" style="color:#6ab4c8;">消音モード</span>
+        </div>
+        <div class="screen-toggle toggle-on"></div>
+      </div>
+      <div class="screen-row">
+        <div style="display:flex;align-items:center;">
+          <span class="screen-icon">📳</span>
+          <span class="screen-label">バイブレーション</span>
+        </div>
+        <div class="screen-toggle toggle-on"></div>
+      </div>
+    </div>
+
+    <div class="tip">
+      ✅ バイブ（振動）のON/OFFも同じ画面で確認できる。<strong>「音は消したけど振動は残したい」場合もここで設定！</strong>
+    </div>
+  </div>
+
+
+  <!-- ===== 比較表 ===== -->
+  <div class="section-card">
+    <div class="section-title">📊 3つの方法 まとめ比較</div>
+    <table class="compare">
+      <thead>
+        <tr>
+          <th>方法</th>
+          <th>速さ</th>
+          <th>事前設定</th>
+          <th>こんな時に</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:var(--blue)">① アクションボタン</strong></td>
+          <td>⚡ 最速</td>
+          <td>要・1回だけ</td>
+          <td>授業中・映画館など<br>とにかく速く消したい</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--pink)">② コントロールセンター</strong></td>
+          <td>🔔 速い</td>
+          <td>不要</td>
+          <td>設定してなくても<br>すぐ使いたい</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--gold)">③ 設定アプリ</strong></td>
+          <td>⚙️ ゆっくり</td>
+          <td>不要</td>
+          <td>バイブも含めて<br>しっかり確認したい</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== まとめ ===== -->
+  <div style="background:linear-gradient(135deg,#d6edf5,#edf7fb);border:2px solid #b0d8e8;border-radius:16px;padding:22px 20px;margin-bottom:20px;">
+    <div style="font-size:18px;font-weight:900;color:#1a4a5a;margin-bottom:10px;">💡 おすすめの使い方</div>
+    <div style="font-size:14px;color:#2a5a6a;line-height:1.9;">
+      <strong>① まず「設定」アプリでアクションボタンを「消音」に設定しよう！</strong><br>
+      一度やっておけば、次からはボタン1つでOK 🎉<br><br>
+      設定がまだの時や忘れた時は <strong>② コントロールセンター</strong> を使えば安心。<br>
+      右上から下にスワイプ → 🔕 タップ、これだけ！
+    </div>
+  </div>
+
+  <div class="footer">📱 iPhone 17 かんたん操作ガイド</div>
+
+</div>
+</body>
+</html>
